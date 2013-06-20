@@ -40,7 +40,7 @@ var userLeft = function (newUserData, allUserArray) { // do your thing here }
 ```
 WhosHere.setup({
   clientId: clientIdString,
-  setId: pageIdentifierString,
+  setKey: pageIdentifierString,
   data: optionalDataToAdd,
   setAddListener: userJoined,
   setRemoveListener: userLeft

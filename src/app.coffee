@@ -1,3 +1,11 @@
+http = require("http")
+fs = require("fs")
+redis = require("redis")
+client = redis.createClient()
+
+client.on "error", (err) ->
+  console.log "Error " + err
+
 handler = (req, res) ->
   console.log req.url
   switch req.url
@@ -25,15 +33,32 @@ loadAndReturnFile = (fileRequested, path, req, res) ->
       replace('{{headers}}', JSON.stringify(req.headers)).
       replace('{{path}}', req.url)
 
-app = require("http").createServer(handler)
-io = require("socket.io").listen(app)
-fs = require("fs")
+client.on 'ready', ->
+  app = http.createServer(handler)
+  io = require("socket.io").listen(app)
 
-app.listen 8080
-io.sockets.on "connection", (socket) ->
-  socket.emit "news",
-    hello: "world"
+  sendSetUpdate = (key) ->
+    client.hgetall key, (err, setData = {}) ->
+      console.log setData
+      socketIds = Object.keys(setData)
+      values = socketIds.map (v) -> setData[v]
+      # Get the socket IDs
+      socketIds.forEach (socketId) ->
+        s = io.sockets.sockets[socketId]
+        s.emit('sadded', values) if s?
 
-  socket.on "my other event", (data) ->
-    console.log data
+  app.listen 8080
+  io.sockets.on "connection", (socket) ->
+    socket.on 'disconnect',  ->
+      socket.get 'setKey', (err, key) ->
+        console.log "id #{socket.id} key #{key}"
+        client.hdel(key, socket.id)
+        sendSetUpdate(key)
 
+    socket.on 'sadd', (saddEvent) ->
+      # Add the socket id and the data
+      socket.set 'setKey', saddEvent.setKey
+      client.hset(saddEvent.setKey, socket.id, saddEvent.data)
+
+      # get the user data to send
+      sendSetUpdate(saddEvent.setKey)
