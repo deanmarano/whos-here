@@ -1,23 +1,18 @@
-console.log('js loaded!');
+WhosHere = {
+  setup: function(options) {
+    var socket = io.connect('http://localhost');
+    socket.emit('sadd', {
+      clientId: options.clientId,
+      setKey: options.setKey,
+      data: options.data
+    });
 
-window.onload = function () {
-  console.log('js executed!');
-  var nameInput = document.getElementById('name');
-  var socket = io.connect('http://localhost');
+    socket.on('sadded', function (data) {
+      options.setAddListener(null, data);
+    });
 
-  nameInput.addEventListener('keypress', function(e) {
-    if (e.charCode == 13) {
-      console.log('firing an event');
-      socket.emit('sadd', {
-        setKey: window.location.href,
-        data: nameInput.value
-      });
-    }
-  });
-
-  socket.on('sadded', function (data) {
-    console.log('event received');
-    console.log(data);
-    document.getElementById('whosHere').innerHTML = JSON.stringify(data);
-  });
-}
+    socket.on('sremed', function (data) {
+      options.setRemoveListener(null, data);
+    });
+  }
+};

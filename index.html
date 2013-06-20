@@ -5,15 +5,35 @@
     <title>Who's Here?</title>
     <script src="/client/whosHereClient.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+      window.onload = function () {
+        var name = window.prompt("What's your name?");
+
+        var userJoined = function(userChanged, userList) {
+          console.log('user joined event received');
+          console.log(userList);
+          document.getElementById('whosHere').innerHTML = JSON.stringify(userList);
+        };
+
+        var userLeft = function(userChanged, userList) {
+          console.log('user left event received');
+          console.log(userList);
+          document.getElementById('whosHere').innerHTML = JSON.stringify(userList);
+        };
+
+        WhosHere.setup({
+          clientId: 'a-client-id',
+          setKey: window.location.href,
+          data: name,
+          setAddListener: userJoined,
+          setRemoveListener: userLeft
+        });
+      }
+    </script>
   </head>
   <body>
     <p>This is who's here.</p>
-    <div>
-      <input type="text" id="name" />
-    </div>
     <div id="whosHere"> </div>
-    <p>{{headers}}</p>
-    <p>{{path}}</p>
   </body>
 </html>
 
