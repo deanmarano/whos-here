@@ -1,0 +1,14 @@
+{
+  "name": "whos-here",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app"
+  },
+  "dependencies": {
+    "coffee-script": "*",
+    "socket.io": "0.9.16",
+    "hiredis": "*",
+    "redis": "*"
+  }
+}
