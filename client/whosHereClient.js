@@ -1,6 +1,6 @@
 WhosHere = {
   setup: function(options) {
-    var socket = io.connect('http://localhost');
+    var socket = io.connect('http://atom.deanoftech.com:3000');
     socket.emit('sadd', {
       clientId: options.clientId,
       setKey: options.setKey,
